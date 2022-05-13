@@ -15,5 +15,3 @@ Video is an entity of this project.
 Job are steps which competes to convert the videos into another codec. Job should have:
 * id
 * local to store
-
-# Creating validations and tests
