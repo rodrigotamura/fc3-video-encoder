@@ -4,3 +4,10 @@ Bento4 is a C++ class library and tools designed to read and write ISO-MP4 files
 
 Upload to GCP and send message to RabbitMQ
 
+# Domains
+Video is an entity of this project.
+
+Job are steps which competes to convert the videos into another codec. Job should have:
+* id
+* local to store
+
