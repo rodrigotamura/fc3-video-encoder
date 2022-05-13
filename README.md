@@ -28,5 +28,9 @@ In `production` we`ll use Postgres.
 
 GoORM will be configured at the **framework layer**.
 
+## Repositories
+
+Every repository is based on interfaces and interfaces only shows us each method we need to implement.
+
 # Framework layer
 In this layer we`ll configure every external adapters, e.g. DB.
