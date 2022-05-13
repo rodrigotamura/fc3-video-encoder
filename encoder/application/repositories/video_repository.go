@@ -41,7 +41,8 @@ func (repo VideoRepositoryDb) Find(id string) (*domain.Video, error) {
 
 	var video domain.Video
 
-	repo.Db.First(&video, "id = ?", id)
+	// Preload("Jobs") will get related jobs
+	repo.Db.Preload("Jobs").First(&video, "id = ?", id)
 
 	if video.ID == "" {
 		return nil, fmt.Errorf("video does not exist")

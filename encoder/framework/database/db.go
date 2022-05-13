@@ -26,8 +26,8 @@ func NewDb() *Database {
 
 func NewDbTest() *gorm.DB {
 	dbInstance := NewDb()
-	dbInstance.Env = "Test"
-	dbInstance.DbType = "sqlite3"
+	dbInstance.Env = "test"
+	dbInstance.DbTypeTest = "sqlite3"
 	dbInstance.DsnTest = ":memory:"
 	dbInstance.AutoMigrateDb = true
 	dbInstance.Debug = true
@@ -35,7 +35,7 @@ func NewDbTest() *gorm.DB {
 	connection, err := dbInstance.Connect()
 
 	if err != nil {
-		log.Fatalf("test db error: %v", err)
+		log.Fatalf("Test db error: %v", err)
 	}
 
 	return connection
@@ -46,9 +46,9 @@ func (d *Database) Connect() (*gorm.DB, error) {
 	var err error
 
 	if d.Env != "test" {
-		d.Db, err := gorm.Open(d.DbType, d.Dsn)
+		d.Db, err = gorm.Open(d.DbType, d.Dsn)
 	} else {
-		d.Db, err := gorm.Open(d.DbTypeTest, d.DsnTest)
+		d.Db, err = gorm.Open(d.DbTypeTest, d.DsnTest)
 	}
 
 	if err != nil {
@@ -61,7 +61,7 @@ func (d *Database) Connect() (*gorm.DB, error) {
 
 	if d.AutoMigrateDb {
 		// run migrations by structs
-		d.Db.AutoMigrate(&domain.Video, &domain.Job)
+		d.Db.AutoMigrate(&domain.Video{}, &domain.Job{})
 		d.Db.Model(domain.Job{}).AddForeignKey("video_id", "videos (id)", "CASCADE", "CASCADE")
 	}
 
