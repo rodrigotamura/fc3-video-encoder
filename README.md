@@ -1,8 +1,15 @@
+# Overview
+This project converts (packaging) MP4 videos to MPEG Dash (using Bento4) and store it in a cloud bucket object storage.
+
 # Requirements
 ### Bento 4
 Bento4 is a C++ class library and tools designed to read and write ISO-MP4 files. This format is defined in international specifications ISO/IEC 14496-12, 14496-14 and 14496-15. The format is a derivative of the Apple Quicktime file format, so Bento4 can be used to read and write most Quicktime files as well. In addition to supporting ISO-MP4, Bento4 includes support for parsing and multiplexing H.264 and H.265 elementary streams, converting ISO-MP4 to MPEG2-TS, packaging HLS and MPEG-DASH, CMAF, content encryption, decryption, and much more.
 
 Upload to GCP and send message to RabbitMQ
+
+### Service account
+
+In order to download and upload the video files we need to create a service account at GCP
 
 ### Dependencies
 * `github.com/asaskevich/govalidator` for data validation
@@ -16,6 +23,8 @@ Video is an entity of this project.
 Job are steps which competes to convert the videos into another codec. Job should have:
 * id
 * local to store
+
+We'll have `service` folder which is responsible to set the usecases.
 
 # Application Layer
 It communicates with domain layer in order to executes transitions (ex: coonection with DB).
@@ -34,3 +43,4 @@ Every repository is based on interfaces and interfaces only shows us each method
 
 # Framework layer
 In this layer we`ll configure every external adapters, e.g. DB.
+
