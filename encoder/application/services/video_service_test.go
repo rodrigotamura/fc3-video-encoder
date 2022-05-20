@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gofrs/uuid"
 	"github.com/joho/godotenv"
+	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/require"
 )
 
@@ -54,5 +54,9 @@ func TestVideoServiceDownload(t *testing.T) {
 
 	// testing encoding
 	err = videoService.Encode()
+	require.Nil(t, err)
+
+	// testing finishing
+	err = videoService.Finish()
 	require.Nil(t, err)
 }
