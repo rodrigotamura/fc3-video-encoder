@@ -51,4 +51,8 @@ func TestVideoServiceDownload(t *testing.T) {
 	// tesing fragment
 	err = videoService.Fragment()
 	require.Nil(t, err)
+
+	// testing encoding
+	err = videoService.Encode()
+	require.Nil(t, err)
 }
