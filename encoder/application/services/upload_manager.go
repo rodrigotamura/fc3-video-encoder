@@ -4,8 +4,10 @@ import (
 	"context"
 	"io"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"cloud.google.com/go/storage"
@@ -15,7 +17,7 @@ type VideoUpload struct {
 	Paths        []string
 	VideoPath    string
 	OutputBucket string
-	Error        []string
+	Errors       []string
 }
 
 func NewVideoUpload() *VideoUpload {
@@ -65,6 +67,59 @@ func (vu *VideoUpload) loadPaths() error {
 
 	return nil
 
+}
+
+func (vu *VideoUpload) ProcessUpload(concurrency int, doneUpload chan string) error {
+
+	in := make(chan int, runtime.NumCPU()) // which file based on Paths slice position
+	returnChannel := make(chan string)     // channel which warns whether upload had an error or not
+
+	err := vu.loadPaths()
+	if err != nil {
+		return err
+	}
+
+	uploadClient, ctx, err := getClientUpload()
+	if err != nil {
+		return err
+	}
+
+	// initializing the upload proccess
+	// depending of concurrency variable will be the number of concurrencies
+	for process := 0; process < concurrency; process++ {
+		go vu.uploadWorker(in, returnChannel, uploadClient, ctx)
+	}
+
+	go func() {
+		for x := 0; x < len(vu.Paths); x++ {
+			in <- x
+		}
+
+		close(in)
+	}()
+
+	for r := range returnChannel {
+		// ensuring that all files has no errors on upload
+		if r != "" {
+			doneUpload <- r
+			break
+		}
+	}
+}
+
+func (vu *VideoUpload) uploadWorker(in chan int, returnChan chan string, uploadClient *storage.Client, ctx context.Context) {
+	for x := range in {
+		err := vu.UploadObject(vu.Paths[x], uploadClient, ctx)
+		if err != nil {
+			vu.Errors = append(vu.Errors, vu.Paths[x])
+			log.Printf("error during the upload: %v. Error: %v", vu.Paths[x], err)
+			returnChan <- err.Error()
+		}
+
+		returnChan <- "" // no error
+	}
+
+	returnChan <- "upload completed"
 }
 
 func getClientUpload() (*storage.Client, context.Context, error) {
